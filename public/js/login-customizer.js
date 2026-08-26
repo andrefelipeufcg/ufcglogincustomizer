@@ -16,11 +16,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!loginForm) return; // não é a tela de login
 
     // ---------- Referências do DOM ----------
-    var loginCol      = loginForm.querySelector('.col-md-5');
+    var loginCol = loginForm.querySelector('.col-md-5');
+    if (loginCol) {
+        // Remove classes originais para ignorar qualquer CSS customizado da Entidade
+        loginCol.className = 'ufcg-login-column';
+        if (loginCol.parentElement) {
+            loginCol.parentElement.className = 'ufcg-login-row';
+        }
+    }
     var textLoginDiv  = loginForm.querySelector('.rich_text_container');
     var cardHeader    = loginCol ? loginCol.querySelector('.card-header') : null;
     var loginNameField = document.getElementById('login_name');
-    var loginPassField = document.getElementById('login_password');
 
     if (!loginCol || !loginNameField) return; // segurança
 
@@ -39,11 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var govbrLink = govbrContainer.querySelector('a[href*="govbrsso"]');
         if (govbrLink) govbrUrl = govbrLink.getAttribute('href');
     }
-
-    // Fallback: tenta extrair do CFG_GLPI
-    var rootDoc = (window.CFG_GLPI && window.CFG_GLPI.root_doc) || '';
-    if (!googleUrl) googleUrl = rootDoc + '/plugins/googlesso/front/authorize.php';
-    if (!govbrUrl)  govbrUrl  = rootDoc + '/plugins/govbrsso/front/redirect.php';
 
     // ---------- Esconde elementos originais ----------
     // Esconde o formulário de login inteiro (campos + botão + "esqueceu senha")
@@ -78,47 +79,41 @@ document.addEventListener('DOMContentLoaded', function () {
     selectorDiv.id = 'ufcg-method-selector';
     selectorDiv.className = 'ufcg-method-selector';
 
+    // --- Botão "Primeiro acesso? Clique aqui" ---
+    if (textLoginDiv) {
+        var firstAccessLink = document.createElement('div');
+        firstAccessLink.className = 'ufcg-first-access-wrapper';
+
+        var firstAccessBtn = document.createElement('button');
+        firstAccessBtn.type = 'button';
+        firstAccessBtn.className = 'ufcg-first-access-btn-large';
+        firstAccessBtn.innerHTML = '<span class="ufcg-info-icon">ℹ️</span> É seu primeiro acesso? Clique aqui';
+        firstAccessBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            textLoginDiv.classList.toggle('ufcg-login-hidden');
+            // Scroll até o texto se estiver visível
+            if (!textLoginDiv.classList.contains('ufcg-login-hidden')) {
+                textLoginDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        firstAccessLink.appendChild(firstAccessBtn);
+        // Move as instruções de primeiro acesso para ficar logo abaixo do botão
+        firstAccessLink.appendChild(textLoginDiv);
+        selectorDiv.appendChild(firstAccessLink);
+    }
+
     // Título
     var title = document.createElement('h2');
     title.className = 'ufcg-method-title';
     title.textContent = 'Como você deseja acessar?';
     selectorDiv.appendChild(title);
 
-    // --- Botão Google ---
-    var googleBtn = createMethodButton(
-        'ufcg-btn-google',
-        '<svg class="ufcg-btn-icon" viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>' +
-        '<span>Entrar com o Google</span>',
-        function () { window.location.href = googleUrl; }
-    );
-    selectorDiv.appendChild(googleBtn);
-
-    // Separador OU
-    selectorDiv.appendChild(createSeparator());
-
-    // --- Botão gov.br ---
-    var govbrBtn = createMethodButton(
-        'ufcg-btn-govbr',
-        '<span>Entrar com </span>' +
-        '<span class="ufcg-govbr-brand">' +
-            '<span style="color:#1351b4">g</span>' +
-            '<span style="color:#fcc400">o</span>' +
-            '<span style="color:#00a859">v</span>' +
-            '<span style="color:#1351b4">.b</span>' +
-            '<span style="color:#fcc400">r</span>' +
-        '</span>',
-        function () { window.location.href = govbrUrl; }
-    );
-    selectorDiv.appendChild(govbrBtn);
-
-    // Separador OU
-    selectorDiv.appendChild(createSeparator());
-
     // --- Botão Login com email e senha ---
     var loginBtn = createMethodButton(
         'ufcg-btn-login',
         '<span class="ufcg-btn-icon">🔑</span>' +
-        '<span>Entrar com usuário e senha</span>',
+        '<span>Entrar com e-mail e senha</span>',
         function () {
             // Esconde o seletor de método
             selectorDiv.classList.add('ufcg-login-hidden');
@@ -135,27 +130,41 @@ document.addEventListener('DOMContentLoaded', function () {
     );
     selectorDiv.appendChild(loginBtn);
 
-    // --- Link "Primeiro acesso? Clique aqui" ---
-    if (textLoginDiv) {
-        var firstAccessLink = document.createElement('div');
-        firstAccessLink.className = 'ufcg-first-access-link';
+    // --- Botão Google ---
+    if (googleUrl) {
+        // Separador OU
+        selectorDiv.appendChild(createSeparator());
 
-        var firstAccessBtn = document.createElement('a');
-        firstAccessBtn.href = '#';
-        firstAccessBtn.className = 'ufcg-first-access-btn';
-        firstAccessBtn.innerHTML = '<span class="ufcg-info-icon">ℹ️</span> Primeiro acesso? Clique aqui';
-        firstAccessBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            textLoginDiv.classList.toggle('ufcg-login-hidden');
-            // Scroll até o texto se estiver visível
-            if (!textLoginDiv.classList.contains('ufcg-login-hidden')) {
-                textLoginDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        });
-
-        firstAccessLink.appendChild(firstAccessBtn);
-        selectorDiv.appendChild(firstAccessLink);
+        var googleBtn = createMethodButton(
+            'ufcg-btn-google',
+            '<svg class="ufcg-btn-icon" viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>' +
+            '<span>Entrar com o Google</span>',
+            function () { window.location.href = googleUrl; }
+        );
+        selectorDiv.appendChild(googleBtn);
     }
+
+    // --- Botão gov.br ---
+    if (govbrUrl) {
+        // Separador OU
+        selectorDiv.appendChild(createSeparator());
+
+        var govbrBtn = createMethodButton(
+            'ufcg-btn-govbr',
+            '<span>Entrar com </span>' +
+            '<span class="ufcg-govbr-brand">' +
+                '<span style="color:#1351b4">g</span>' +
+                '<span style="color:#fcc400">o</span>' +
+                '<span style="color:#00a859">v</span>' +
+                '<span style="color:#1351b4">.b</span>' +
+                '<span style="color:#fcc400">r</span>' +
+            '</span>',
+            function () { window.location.href = govbrUrl; }
+        );
+        selectorDiv.appendChild(govbrBtn);
+    }
+
+
 
     // Insere o seletor no início do loginCol
     loginCol.insertBefore(selectorDiv, loginCol.firstChild);

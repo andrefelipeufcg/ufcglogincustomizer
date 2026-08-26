@@ -2,6 +2,23 @@
  * UFCG Login Customizer — Estilos da tela de login
  * ============================================================ */
 
+/* --- Containers principais isolados do Bootstrap/Custom CSS --- */
+.ufcg-login-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ufcg-login-column {
+    width: 100% !important;
+    max-width: 650px !important;
+    margin: 0 auto !important;
+    padding: 10px !important;
+}
+
 /* --- Classe utilitária de ocultação --- */
 .ufcg-login-hidden {
     display: none !important;
@@ -33,6 +50,7 @@
     justify-content: center;
     gap: 10px;
     width: 100%;
+    max-width: 400px;
     padding: 14px 20px;
     font-size: 0.95rem;
     font-weight: 500;
@@ -126,32 +144,41 @@
     white-space: nowrap;
 }
 
-/* --- Link "Primeiro acesso? Clique aqui" --- */
-.ufcg-first-access-link {
-    margin-top: 16px;
-    text-align: center;
+/* --- Botão "Primeiro acesso? Clique aqui" (Destaque) --- */
+.ufcg-first-access-wrapper {
     width: 100%;
+    margin-bottom: 24px;
 }
 
-.ufcg-first-access-btn {
-    display: inline-flex;
+.ufcg-first-access-btn-large {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
-    color: var(--tblr-primary, #206bc4);
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: background 0.15s ease;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #475569; /* Cinza ardósia claro (como na imagem) */
+    border: 1px solid #475569;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.ufcg-first-access-btn:hover {
-    background: rgba(32, 107, 196, 0.08);
-    text-decoration: underline;
+.ufcg-first-access-btn-large:hover {
+    background-color: #334155;
+    border-color: #334155;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
 }
 
 .ufcg-info-icon {
-    font-size: 1rem;
+    font-size: 1.15rem;
 }
 
 /* --- Botão Voltar --- */
