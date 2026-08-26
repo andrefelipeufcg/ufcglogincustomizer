@@ -120,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Botão Login com email e senha ---
     var loginBtn = createMethodButton(
         'ufcg-btn-login',
-        '<span class="ufcg-btn-icon">🔑</span>' +
         '<span>Entrar com e-mail e senha</span>',
         function () {
             // Esconde o seletor de método

@@ -233,3 +233,14 @@
     color: #ffffff !important;
     text-decoration: none;
 }
+
+/* --- Custom Logo Override --- */
+.glpi-logo {
+    content: url('../img/logo.svg') !important;
+    background: none !important; /* Remove qualquer background antigo */
+    height: 80px !important;
+    width: 250px !important;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: contain;
+}
