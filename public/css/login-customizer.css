@@ -213,3 +213,23 @@
         font-size: 0.9rem;
     }
 }
+
+/* --- Botão Novo Cadastro (Primeiro Acesso) --- */
+.ufcg-novo-cadastro-btn {
+    display: inline-block;
+    background-color: #00c3b6;
+    color: #ffffff !important;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+.ufcg-novo-cadastro-btn:hover {
+    background-color: #009b91;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+    color: #ffffff !important;
+    text-decoration: none;
+}

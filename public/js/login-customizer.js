@@ -24,7 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
             loginCol.parentElement.className = 'ufcg-login-row';
         }
     }
-    var textLoginDiv  = loginForm.querySelector('.rich_text_container');
+    var rootDoc = (window.CFG_GLPI && window.CFG_GLPI.root_doc) || '';
+    
+    var textLoginDiv = loginForm.querySelector('.rich_text_container');
+    if (!textLoginDiv) {
+        textLoginDiv = document.createElement('div');
+        textLoginDiv.className = 'rich_text_container text-center';
+    }
+    // Sobrescreve o HTML com o nosso arquivo customizado
+    fetch(rootDoc + '/plugins/ufcglogincustomizer/public/html/primeiroacesso.html')
+        .then(function(res) { return res.text(); })
+        .then(function(html) { textLoginDiv.innerHTML = html; })
+        .catch(function(err) { console.error('Erro ao carregar HTML customizado:', err); });
+
     var cardHeader    = loginCol ? loginCol.querySelector('.card-header') : null;
     var loginNameField = document.getElementById('login_name');
 
@@ -64,11 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (googleContainer) googleContainer.classList.add('ufcg-login-hidden');
     if (govbrContainer)  govbrContainer.classList.add('ufcg-login-hidden');
 
-    // Esconde o painel de texto de primeiro acesso (lado esquerdo)
-    if (textLoginDiv) {
-        textLoginDiv.classList.add('ufcg-login-hidden');
-        textLoginDiv.setAttribute('data-ufcg-first-access', 'true');
-    }
+    // Esconde o painel de texto de primeiro acesso
+    textLoginDiv.classList.add('ufcg-login-hidden');
+    textLoginDiv.setAttribute('data-ufcg-first-access', 'true');
 
     // Esconde o col-auto do hook DISPLAY_LOGIN (painel direito dos plugins)
     var hookCol = loginForm.querySelector('.col-auto.px-2');
@@ -80,8 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     selectorDiv.className = 'ufcg-method-selector';
 
     // --- Botão "Primeiro acesso? Clique aqui" ---
-    if (textLoginDiv) {
-        var firstAccessLink = document.createElement('div');
+    var firstAccessLink = document.createElement('div');
         firstAccessLink.className = 'ufcg-first-access-wrapper';
 
         var firstAccessBtn = document.createElement('button');
@@ -101,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Move as instruções de primeiro acesso para ficar logo abaixo do botão
         firstAccessLink.appendChild(textLoginDiv);
         selectorDiv.appendChild(firstAccessLink);
-    }
 
     // Título
     var title = document.createElement('h2');
