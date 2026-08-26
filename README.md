@@ -25,6 +25,16 @@ Para utilizar a logo da sua instituição:
 2. Substitua o arquivo `logo.svg` pela sua imagem vetorial (`.svg`). 
 3. *Atenção:* Se você quiser usar um formato diferente (como `.png`), lembre-se de atualizar o caminho na regra `.glpi-logo` dentro de `public/css/login-customizer.css`.
 
+## Como Exibir um Quadro de Avisos
+
+O plugin transforma a caixa de texto nativa da página de login do GLPI num painel de alertas dinâmico. 
+Se você precisar comunicar algo importante a todos os usuários (ex: "Sistema em manutenção" ou um alerta de segurança), faça o seguinte:
+1. Acesse o GLPI com perfil *Super-Admin*.
+2. Navegue até **Configurar > Geral**.
+3. Escreva seu recado no campo **Texto na caixa de login**.
+
+Tudo que for cadastrado nesse campo será formatado e posicionado automaticamente como um aviso **acima do botão de Primeiro Acesso**. Se o campo for deixado em branco, a área de aviso é ocultada por padrão.
+
 ## Como Alterar o Texto de "Primeiro Acesso"
 
 As instruções de primeiro acesso (e o link de direcionamento para novos cadastros) estão em um arquivo estático HTML independente da configuração geral do GLPI.
@@ -39,6 +49,11 @@ Para editá-lo:
 3. Vá em **Configurar > Plugins**.
 4. Localize o **UFCG Login Customizer** na lista, clique em **Instalar** e, em seguida, em **Ativar**.
 5. *Dica:* Por se tratar de manipulação pesada de recursos visuais estáticos (CSS/JS), após ativá-lo, force a atualização do cache do seu navegador na tela de login (usando `Ctrl + F5`) para ver as mudanças refletidas.
+
+## Como Restaurar a Tela Original do GLPI
+
+Como o plugin age apenas na camada de apresentação (visualização no navegador) sem alterar o núcleo do sistema, a reversão é imediata:
+Caso você queira voltar a utilizar a tela de login tradicional padrão do GLPI, basta ir em **Configurar > Plugins** e clicar em **Desativar** ao lado do UFCG Login Customizer. Nenhuma outra configuração será perdida.
 
 ## Requisitos
 

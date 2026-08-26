@@ -244,3 +244,9 @@
     margin-right: auto;
     object-fit: contain;
 }
+
+/* --- Aviso Customizado GLPI --- */
+.ufcg-login-warning {
+    margin-bottom: 20px;
+    width: 100%;
+}
