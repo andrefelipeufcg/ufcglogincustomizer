@@ -46,4 +46,4 @@ Para editá-lo:
 - PHP >= 8.2
 
 ---
-**Desenvolvido por STI-UFCG**
+**Desenvolvido por [andrefelipeufcg](https://github.com/andrefelipeufcg)**

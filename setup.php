@@ -35,7 +35,7 @@ function plugin_version_ufcglogincustomizer(): array
     return [
         'name'         => __('UFCG Login Customizer', 'ufcglogincustomizer'),
         'version'      => PLUGIN_UFCGLOGINCUSTOMIZER_VERSION,
-        'author'       => 'STI-UFCG',
+        'author'       => 'andrefelipeufcg',
         'license'      => 'GPLv3+',
         'homepage'     => '',
         'requirements' => [
