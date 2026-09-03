@@ -27,18 +27,29 @@ document.addEventListener('DOMContentLoaded', function () {
     var rootDoc = (window.CFG_GLPI && window.CFG_GLPI.root_doc) || '';
     
     var textLoginDiv = loginForm.querySelector('.rich_text_container');
-    var hasWarning = false;
     
     if (textLoginDiv) {
-        var textContent = textLoginDiv.textContent || textLoginDiv.innerText;
+        var warningText = (textLoginDiv.textContent || textLoginDiv.innerText).trim();
         var hasMedia = textLoginDiv.querySelectorAll('img, iframe, video').length > 0;
         
-        if (textContent.trim() !== '' || hasMedia) {
-            hasWarning = true;
-            textLoginDiv.classList.add('ufcg-login-warning');
-        } else {
-            textLoginDiv.style.display = 'none';
+        if (warningText !== '' || hasMedia) {
+            // Calcula hash simples do conteúdo para detectar mudanças
+            var warningHash = simpleHash(textLoginDiv.innerHTML);
+            var storageKey = 'ufcg_warning_dismissed';
+            var stored = null;
+            
+            try { stored = JSON.parse(localStorage.getItem(storageKey)); } catch (e) { /* ignora */ }
+            
+            // Mostra popup se: nunca dispensou OU o conteúdo mudou desde a última dispensa
+            var shouldShow = !stored || stored.hash !== warningHash;
+            
+            if (shouldShow) {
+                showWarningPopup(textLoginDiv, warningHash, storageKey);
+            }
         }
+        
+        // Esconde o container original — o conteúdo vive dentro do popup agora
+        textLoginDiv.style.display = 'none';
     }
 
     // Cria o container para as instruções customizadas do arquivo HTML
@@ -104,11 +115,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Botão "Primeiro acesso? Clique aqui" ---
     var firstAccessLink = document.createElement('div');
     firstAccessLink.className = 'ufcg-first-access-wrapper';
-
-    // Se existe um aviso configurado, o colocamos acima do botão
-    if (hasWarning && textLoginDiv) {
-        firstAccessLink.appendChild(textLoginDiv);
-    }
 
     var firstAccessBtn = document.createElement('button');
     firstAccessBtn.type = 'button';
@@ -237,5 +243,82 @@ document.addEventListener('DOMContentLoaded', function () {
         sep.className = 'ufcg-separator';
         sep.innerHTML = '<hr class="ufcg-sep-line"><span class="ufcg-sep-text">OU</span><hr class="ufcg-sep-line">';
         return sep;
+    }
+
+    // ---------- Popup de aviso ----------
+
+    function simpleHash(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            var ch = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + ch;
+            hash |= 0; // converte para inteiro 32-bit
+        }
+        return hash.toString(36);
+    }
+
+    function showWarningPopup(sourceDiv, hash, storageKey) {
+        // Overlay escuro
+        var overlay = document.createElement('div');
+        overlay.className = 'ufcg-popup-overlay';
+
+        // Caixa do modal
+        var modal = document.createElement('div');
+        modal.className = 'ufcg-popup-modal';
+
+        // Cabeçalho
+        var header = document.createElement('div');
+        header.className = 'ufcg-popup-header';
+        
+        var headerTitle = document.createElement('div');
+        headerTitle.className = 'ufcg-popup-title';
+        headerTitle.innerHTML = '<span class="ufcg-popup-icon">⚠️</span> Aviso';
+        
+        var headerClose = document.createElement('button');
+        headerClose.type = 'button';
+        headerClose.className = 'ufcg-popup-close';
+        headerClose.innerHTML = 'X'; // Pode usar '×' se preferir
+        headerClose.title = 'Fechar';
+        headerClose.addEventListener('click', function () {
+            overlay.remove();
+        });
+        
+        header.appendChild(headerTitle);
+        header.appendChild(headerClose);
+        modal.appendChild(header);
+
+        // Corpo — clona o conteúdo do rich_text_container
+        var body = document.createElement('div');
+        body.className = 'ufcg-popup-body';
+        body.innerHTML = sourceDiv.innerHTML;
+        modal.appendChild(body);
+
+        // Rodapé com botões
+        var footer = document.createElement('div');
+        footer.className = 'ufcg-popup-footer';
+
+        var btnDismiss = document.createElement('button');
+        btnDismiss.type = 'button';
+        btnDismiss.className = 'ufcg-popup-btn ufcg-popup-btn-primary';
+        btnDismiss.textContent = 'Fechar e não mostrar novamente';
+        btnDismiss.addEventListener('click', function () {
+            try {
+                localStorage.setItem(storageKey, JSON.stringify({ hash: hash }));
+            } catch (e) { /* localStorage cheio ou bloqueado */ }
+            overlay.remove();
+        });
+
+        footer.appendChild(btnDismiss);
+        modal.appendChild(footer);
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Fecha ao clicar fora do modal (no overlay)
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) {
+                overlay.remove();
+            }
+        });
     }
 });
