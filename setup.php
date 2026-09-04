@@ -10,7 +10,7 @@
 
 use Glpi\Plugin\Hooks;
 
-define('PLUGIN_UFCGLOGINCUSTOMIZER_VERSION', '1.0.1');
+define('PLUGIN_UFCGLOGINCUSTOMIZER_VERSION', '1.0.2');
 define('PLUGIN_UFCGLOGINCUSTOMIZER_MIN_GLPI', '11.0.0');
 
 function plugin_init_ufcglogincustomizer(): void
